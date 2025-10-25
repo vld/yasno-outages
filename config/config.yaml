@@ -4,3 +4,10 @@ yasno:
   group_id: "5.2"
   local_tz: "Europe/Kyiv"
   url: "https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/{city_id}/dsos/{dso_id}/planned-outages"
+
+db:
+  host: !ENV ${DB_HOST:127.0.0.1}
+  port: !ENV ${DB_PORT:33060}
+  user: !ENV ${DB_USER:yasno}
+  password: !ENV ${DB_PASSWORD:yasno_password}
+  database: !ENV ${DB_NAME:outages}

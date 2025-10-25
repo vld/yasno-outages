@@ -7,3 +7,11 @@ class YasnoConfig(BaseModel):
     group_id: str
     local_tz: str
     url: str
+
+
+class MySQLConfig(BaseModel):
+    user: str
+    password: str
+    host: str
+    port: int
+    database: str

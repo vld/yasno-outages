@@ -1,0 +1,9 @@
+services:
+  db:
+    image: mariadb:lts-ubi9
+    restart: always
+    ports:
+      - "33060:3306"
+
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 1
