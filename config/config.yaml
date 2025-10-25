@@ -1,0 +1,6 @@
+yasno:
+  city_id: 25
+  dso_id: 902
+  group_id: "5.2"
+  local_tz: "Europe/Kyiv"
+  url: "https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/{city_id}/dsos/{dso_id}/planned-outages"
