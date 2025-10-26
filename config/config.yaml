@@ -11,3 +11,8 @@ db:
   user: !ENV ${DB_USER:yasno}
   password: !ENV ${DB_PASSWORD:yasno_password}
   database: !ENV ${DB_NAME:outages}
+
+notifier:
+  type: telegram
+  bot_token: !ENV ${TELEGRAM_BOT_TOKEN}
+  chat_id: !ENV ${TELEGRAM_CHAT_ID}

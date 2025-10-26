@@ -15,3 +15,8 @@ class MySQLConfig(BaseModel):
     host: str
     port: int
     database: str
+
+
+class TelegramConfig(BaseModel):
+    bot_token: str
+    chat_id: str
