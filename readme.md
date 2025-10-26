@@ -1,12 +1,6 @@
 # Yasno outages parser
 
 ## How to run
-1. Create virtual env
-```bash
-
-```
-
-## How to run the Python project
 
 1. **Create a virtual environment**
    ```bash
@@ -14,22 +8,26 @@
    source .venv/bin/activate 
    ```
 
-2. **Install `uv`**
+1. **Install `uv`**
    ```bash
    pip install uv
    ```
 
-3. **Install all required packages**
+1. **Install all required packages**
    ```bash
    uv sync
    ```
 
-4. **Run the project**
+1. **Create env file**
+   ```bash
+   cp example.env .env
+   ```
+1. **Run the project**
    ```bash
    uv run main.py
    ```
 
-## MariaDB
+## MariaDB scripts
 ```sql
 CREATE DATABASE IF NOT EXISTS outages;
 CREATE TABLE IF NOT EXISTS outages.plans (date DATE NOT NULL, slots JSON, updated_on DATETIME, PRIMARY KEY (date));
