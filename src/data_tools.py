@@ -1,5 +1,5 @@
-from src.config import YasnoConfig, MySQLConfig
-from src.models import PlanInfo, OutagesPlan, Slot
+from src.config import YasnoConfig, MySQLConfig, FileStorageConfig
+from src.models import PlanInfo, OutagesPlan
 from datetime import date
 import atexit
 import requests
@@ -19,7 +19,15 @@ class YasnoPlannedOutageParser:
         return PlanInfo(**data)
 
 
-class PlanDB:
+class BaseInfoStorage:
+    def save_plan(self, plan: OutagesPlan):
+        raise NotImplementedError
+
+    def read_plan(self, plan_date: date) -> OutagesPlan | None:
+        raise NotImplementedError
+
+
+class MariaDBInfoStorage(BaseInfoStorage):
     def __init__(self, config: MySQLConfig):
         self.config = config
         self._connection = None
@@ -78,7 +86,26 @@ class PlanDB:
             self._connection.close()
 
 
+class FileInfoStorage(BaseInfoStorage):
+    def __init__(self, config: FileStorageConfig):
+        self.config = config
+
+    def read_plan(self, plan_date: date) -> OutagesPlan | None:
+        date_str = plan_date.strftime("%d.%m.%Y")
+        try:
+            with open(f"{self.config.path}/plan_{date_str}.json", "rb") as f:
+                data = orjson.loads(f.read())
+                return OutagesPlan.model_validate(data)
+        except FileNotFoundError:
+            return None
+
+    def save_plan(self, plan: OutagesPlan):
+        date_str = plan.date.strftime("%d.%m.%Y")
+        with open(f"{self.config.path}/plan_{date_str}.json", "wb+") as f:
+            f.write(orjson.dumps(plan.model_dump()))
+
+
 class OutagesPlanDiffChecker:
     @staticmethod
     def has_changes(old_plan: OutagesPlan, new_plan: OutagesPlan) -> bool:
-        return old_plan.slots != new_plan.slots
+        return (old_plan.updated_on != new_plan.updated_on) and (old_plan.slots != new_plan.slots)

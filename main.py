@@ -1,9 +1,10 @@
-from src.config import YasnoConfig, MySQLConfig, TelegramConfig
-from src.models import NotificationType, NotificationMessage
-from src.data_tools import YasnoPlannedOutageParser, PlanDB, OutagesPlanDiffChecker
-from src.notification import PrintNotifier, TelegramNotifier
-from pyaml_env import parse_config
 import logging
+import sys
+from pyaml_env import parse_config
+from src.config import YasnoConfig
+from src.models import NotificationType, NotificationMessage
+from src.data_tools import YasnoPlannedOutageParser, OutagesPlanDiffChecker
+from src.factories import NotifierFactory, StorageFactory
 
 
 logging.basicConfig(
@@ -19,31 +20,32 @@ if __name__ == "__main__":
     yasno_parser = YasnoPlannedOutageParser(config=yasno_config)
     plan_info = yasno_parser.parse()
 
-    config_db = MySQLConfig(**conf_dict["db"])
-    plan_db = PlanDB(config=config_db)
+    notifier = NotifierFactory.create_notifier(conf_dict["notifier"])
+    storage = StorageFactory.create_storage(conf_dict["storage"])
+    if storage is None:
+        logger.error("No valid storage configured.")
+        sys.exit(1)
 
-    telegram_conf = TelegramConfig(**conf_dict["notifier"])
-    notifier = TelegramNotifier(telegram_conf)
     for parsed_plan in (plan_info.today, plan_info.tomorrow):
-        date_str = parsed_plan.date.strftime("%d.%m.%Y")
-        stored_plan = plan_db.read_plan(plan_date=parsed_plan.date)
+        parsed_plan.updated_on = plan_info.updated_on
+        stored_plan = storage.read_plan(plan_date=parsed_plan.date)
         message: NotificationMessage | None = None
         if stored_plan:
             if OutagesPlanDiffChecker.has_changes(old_plan=stored_plan, new_plan=parsed_plan):
-                logger.info("Plan has changed %s.", parsed_plan)
+                logger.info("Plan has changed %r.", parsed_plan)
                 message = NotificationMessage(
                     notification_type=NotificationType.PLAN_CHANGED,
                     plan=parsed_plan,
                 )
-                plan_db.save_plan(parsed_plan)
+                storage.save_plan(parsed_plan)
             else:
-                logger.info("No changes in %s plan.", date_str)
+                logger.info("No changes in %r plan.", parsed_plan)
         else:
-            logger.info("No existing plan found for %s.", date_str)
+            logger.info("No existing plan found for %r.", parsed_plan)
             message = NotificationMessage(
                 notification_type=NotificationType.PLAN_NEW,
                 plan=parsed_plan,
             )
-            plan_db.save_plan(parsed_plan)
-        if message:
+            storage.save_plan(parsed_plan)
+        if message and notifier:
             notifier.send_notification(message=message)

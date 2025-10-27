@@ -17,6 +17,10 @@ class MySQLConfig(BaseModel):
     database: str
 
 
+class FileStorageConfig(BaseModel):
+    path: str
+
+
 class TelegramConfig(BaseModel):
     bot_token: str
     chat_id: str
