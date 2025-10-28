@@ -24,7 +24,7 @@
    ```
 1. **Run the project**
    ```bash
-   uv run main.py
+   uv run --env-file .env main.py
    ```
 
 ## MariaDB scripts
@@ -39,3 +39,4 @@ SHOW DATABASES;
 
 ```
 
+https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/25/dsos/902/planned-outages
