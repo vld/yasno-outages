@@ -10,7 +10,7 @@ class NotifierFactory:
             case "print":
                 return PrintNotifier()
             case "telegram":
-                telegram_config = TelegramConfig(bot_token=config["bot_token"], chat_id=config["chat_id"])
+                telegram_config = TelegramConfig(**config)
                 return TelegramNotifier(telegram_config)
             case _:
                 return None

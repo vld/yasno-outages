@@ -39,9 +39,11 @@ if __name__ == "__main__":
                 )
                 storage.save_plan(parsed_plan)
             else:
-                logger.info("No changes in %r plan.", parsed_plan)
+                logger.info("No changes in plan: %r", parsed_plan)
         else:
-            logger.info("No existing plan found for %r.", parsed_plan)
+            logger.info(
+                "No existing plan found for %s, new plan: %r", parsed_plan.date.strftime("%d.%m.%Y"), parsed_plan
+            )
             message = NotificationMessage(
                 notification_type=NotificationType.PLAN_NEW,
                 plan=parsed_plan,

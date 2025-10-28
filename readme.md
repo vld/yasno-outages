@@ -38,5 +38,3 @@ GRANT ALL PRIVILEGES ON outages.plans TO 'yasno'@'%';
 SHOW DATABASES;
 
 ```
-
-https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/25/dsos/902/planned-outages
