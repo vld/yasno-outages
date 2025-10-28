@@ -24,3 +24,4 @@ class FileStorageConfig(BaseModel):
 class TelegramConfig(BaseModel):
     bot_token: str
     chat_id: str
+    thread_id: str

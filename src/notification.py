@@ -25,7 +25,7 @@ class TelegramNotifier(BaseNotifier):
     def send_notification(self, message: NotificationMessage) -> None:
         try:
             url = f"https://api.telegram.org/bot{self.config.bot_token}/sendMessage"
-            payload = {"chat_id": self.config.chat_id, "text": str(message)}
+            payload = {"message_thread_id": self.config.thread_id, "chat_id": self.config.chat_id, "text": str(message)}
             response = requests.post(url, data=payload)
             response.raise_for_status()
         except requests.RequestException as e:
