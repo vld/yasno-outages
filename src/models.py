@@ -25,7 +25,7 @@ class Slot(BaseModel):
 class OutagesPlan(BaseModel):
     date: datetime
     slots: list[Slot]
-    status: Literal["EmergencyShutdowns", "ScheduleApplies", "WaitingForSchedule", "NoOutages"]
+    status: str  # Literal["EmergencyShutdowns", "ScheduleApplies", "WaitingForSchedule", "NoOutages"]
     updated_on: datetime | None = Field(default=None, alias="updatedOn")
 
     def __str__(self):
@@ -40,7 +40,11 @@ class OutagesPlan(BaseModel):
                 status_message = "Без відключень"
             case _:
                 status_message = ""
-        return "\n".join([status_message, "\n".join([str(slot) for slot in self.slots])])
+        if self.slots:
+            slots_message = "\n".join([str(slot) for slot in self.slots])
+        else:
+            slots_message = "⏳ Ще немає даних"
+        return "\n".join([status_message, slots_message])
 
 
 class PlanInfo(BaseModel):
