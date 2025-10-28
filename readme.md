@@ -24,7 +24,7 @@
    ```
 1. **Run the project**
    ```bash
-   uv run --env-file .env main.py
+   uv run --env-file .env main.py >> yasno.log 2>&1
    ```
 
 ## MariaDB scripts

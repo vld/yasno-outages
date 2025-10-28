@@ -2,6 +2,10 @@ from pydantic import BaseModel, Field
 from typing import Literal
 from datetime import datetime, timedelta
 from enum import Enum
+import logging
+
+
+logger = logging.getLogger("YasnoOutageMonitor")
 
 
 class NotificationType(str, Enum):
@@ -38,7 +42,9 @@ class OutagesPlan(BaseModel):
                 status_message = "Буде застосовуватися графік"
             case "NoOutages":
                 status_message = "Без відключень"
+                return status_message
             case _:
+                logger.warning("Unknown status: %s, full plan: %s", self.status, self)
                 status_message = ""
         if self.slots:
             slots_message = "\n".join([str(slot) for slot in self.slots])
