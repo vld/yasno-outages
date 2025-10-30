@@ -33,23 +33,23 @@ class OutagesPlan(BaseModel):
     updated_on: datetime | None = Field(default=None, alias="updatedOn")
 
     def __str__(self):
+        slots_message: str | None = None
         match self.status:
             case "EmergencyShutdowns":
-                status_message = "🚨 Екстрені відключення, графіки не діють"
+                return "🚨 Екстрені відключення, графіки не діють"
             case "ScheduleApplies":
                 status_message = "Діють графіки запланованих відключень"
             case "WaitingForSchedule":
                 status_message = "Буде застосовуватися графік"
             case "NoOutages":
-                status_message = "Без відключень"
-                return status_message
+                return "Без відключень"
             case _:
                 logger.warning("Unknown status: %s, full plan: %s", self.status, self)
-                status_message = ""
+
         if self.slots:
             slots_message = "\n".join([str(slot) for slot in self.slots])
         else:
-            slots_message = "⏳ Ще немає даних"
+            slots_message = "⏳ Очікуємо оновлення"
         return "\n".join([status_message, slots_message])
 
 
