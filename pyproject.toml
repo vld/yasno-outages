@@ -20,3 +20,8 @@ dependencies = [
     "urllib3==2.5.0",
     "uv==0.9.5",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]
