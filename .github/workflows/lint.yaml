@@ -1,7 +1,21 @@
-- name: ruff-action
-  uses: astral-sh/ruff-action@v3.5.1
-  with:
-    src: >-
-      "./src"
-      "./main.py"
-      "./tests"
+name: Lint and test
+on:
+  push:
+    branches:
+      - main
+      - feature-branch-*
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+    - name: ruff-action
+      uses: astral-sh/ruff-action@v3.5.1
+      with:
+        src: >-
+          "./src"
+          "./main.py"
+          "./tests"
