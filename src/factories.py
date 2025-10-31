@@ -1,6 +1,6 @@
 from src.notification import BaseNotifier, TelegramNotifier, TelegramConfig, PrintNotifier
-from src.config import MySQLConfig, FileStorageConfig
-from src.data_tools import BaseInfoStorage, MariaDBInfoStorage, FileInfoStorage
+from src.config import FileStorageConfig
+from src.data_tools import BaseInfoStorage, FileInfoStorage
 
 
 class NotifierFactory:
@@ -20,9 +20,6 @@ class StorageFactory:
     @staticmethod
     def create_storage(config: dict) -> BaseInfoStorage | None:
         match config["type"]:
-            case "maria_db":
-                config_db = MySQLConfig(**config)
-                storage = MariaDBInfoStorage(config=config_db)
             case "file_storage":
                 config_file = FileStorageConfig(**config)
                 storage = FileInfoStorage(config=config_file)  # Placeholder for file storage implementation

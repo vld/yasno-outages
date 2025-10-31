@@ -1,9 +1,7 @@
-from src.config import YasnoConfig, MySQLConfig, FileStorageConfig
+from src.config import YasnoConfig, FileStorageConfig
 from src.models import PlanInfo, OutagesPlan
 from datetime import date
-import atexit
 import requests
-import mariadb
 import orjson
 
 
@@ -25,65 +23,6 @@ class BaseInfoStorage:
 
     def read_plan(self, plan_date: date) -> OutagesPlan | None:
         raise NotImplementedError
-
-
-class MariaDBInfoStorage(BaseInfoStorage):
-    def __init__(self, config: MySQLConfig):
-        self.config = config
-        self._connection = None
-        atexit.register(self.close)
-
-    def get_connection(self):
-        if self._connection is None:
-            self._connection = mariadb.connect(
-                user=self.config.user,
-                password=self.config.password,
-                host=self.config.host,
-                port=self.config.port,
-                database=self.config.database,
-            )
-        return self._connection
-
-    def read_plan(self, plan_date: date) -> OutagesPlan | None:
-        with mariadb.connect(
-            user=self.config.user,
-            password=self.config.password,
-            host=self.config.host,
-            port=self.config.port,
-            database=self.config.database,
-        ) as conn:
-            with conn.cursor(dictionary=True) as cursor:
-                query = "SELECT * FROM plans WHERE date = %s"
-                cursor.execute(query, (plan_date,))
-                result = cursor.fetchone()
-        if result:
-            result["slots"] = orjson.loads(result["slots"])
-            return OutagesPlan.model_validate(result)
-        return None
-
-    def save_plan(self, plan: OutagesPlan):
-        with mariadb.connect(
-            user=self.config.user,
-            password=self.config.password,
-            host=self.config.host,
-            port=self.config.port,
-            database=self.config.database,
-        ) as conn:
-            with conn.cursor() as cursor:
-                query = """
-                INSERT INTO plans (date, updated_on, slots)
-                VALUES (%s, %s, %s)
-                ON DUPLICATE KEY UPDATE
-                    updated_on = VALUES(updated_on),
-                    slots = VALUES(slots)
-                """
-                slots_json = orjson.dumps([slot.model_dump() for slot in plan.slots])
-                cursor.execute(query, (plan.date, plan.updated_on, slots_json))
-            conn.commit()
-
-    def close(self):
-        if self._connection:
-            self._connection.close()
 
 
 class FileInfoStorage(BaseInfoStorage):

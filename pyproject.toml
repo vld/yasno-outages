@@ -7,7 +7,6 @@ dependencies = [
     "certifi==2025.10.5",
     "charset-normalizer==3.4.4",
     "idna==3.11",
-    "mariadb==1.1.14",
     "orjson==3.11.4",
     "packaging==25.0",
     "pyaml-env==1.2.2",
