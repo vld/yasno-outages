@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - main
-      - feature-branch-*
+      - feature-*
 
 jobs:
   lint:
@@ -15,7 +15,7 @@ jobs:
     - name: Print GITHUB_WORKSPACE
       run: echo $GITHUB_WORKSPACE
     - name: Show files
-      run: ls -l
+      run: ls -l ../
     - name: ruff-action
       uses: astral-sh/ruff-action@v3.5.1
       with:
