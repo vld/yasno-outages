@@ -1,5 +1,4 @@
 from src.models import OutagesPlan, Slot
-from datetime import datetime, timedelta
 
 
 def test_empty_slots_messages(base_plan):
