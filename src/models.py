@@ -20,9 +20,11 @@ class Slot(BaseModel):
     type: Literal["NotPlanned", "Definite"]
 
     def __str__(self):
+        if self.type == "NotPlanned":
+            return ""
         start_dt = (datetime.min + timedelta(minutes=self.start)).strftime("%H:%M")
         end_dt = (datetime.min + timedelta(minutes=self.end)).strftime("%H:%M")
-        text_type = "Є світло 💡" if self.type == "NotPlanned" else "Немає світла ❌"
+        text_type = "Немає світла ❌"
         return f"{text_type} з {start_dt} до {end_dt}"
 
 
@@ -47,7 +49,7 @@ class OutagesPlan(BaseModel):
                 logger.warning("Unknown status: %s, full plan: %s", self.status, self)
 
         if self.slots:
-            slots_message = "\n".join([str(slot) for slot in self.slots])
+            slots_message = "\n".join([str(slot) for slot in self.slots if str(slot)])
         else:
             slots_message = "⏳ Очікуємо оновлення"
         return "\n".join([status_message, slots_message])
