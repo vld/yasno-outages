@@ -12,6 +12,8 @@ jobs:
       matrix:
         python-version: ["3.11", "3.13"]
     steps:
+    - name: Checkout repo
+      uses: actions/checkout@v5
     - name: Print GITHUB_WORKSPACE
       run: echo $GITHUB_WORKSPACE
     - name: Show files
