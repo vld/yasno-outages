@@ -1,0 +1,7 @@
+- name: ruff-action
+  uses: astral-sh/ruff-action@v3.5.1
+  with:
+    src: >-
+      "./src"
+      "./main.py"
+      "./tests"
