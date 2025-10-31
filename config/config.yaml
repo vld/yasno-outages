@@ -8,13 +8,6 @@ yasno:
 storage:
   type: file_storage
   path: !ENV ${FILE_PATH:./outages}
-#   type: maria_db
-#   host: !ENV ${DB_HOST:127.0.0.1}
-#   port: !ENV ${DB_PORT:33060}
-#   user: !ENV ${DB_USER:yasno}
-#   password: !ENV ${DB_PASSWORD:yasno_password}
-#   database: !ENV ${DB_NAME:outages}
-
 
 notifier:
   type: telegram
