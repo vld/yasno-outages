@@ -1,5 +1,4 @@
 import logging
-import sys
 from pyaml_env import parse_config
 from src.config import YasnoConfig
 from src.models import NotificationType, NotificationMessage
