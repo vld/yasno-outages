@@ -2,8 +2,13 @@ from pytest import fixture
 
 
 @fixture
-def base_plan():
-    plan = {"date": "2025-10-28T00:00:00+02:00", "slots": [], "updated_on": "2025-10-28T12:55:08+00:00"}
+def raw_plan():
+    plan = {
+        "date": "2025-10-28T00:00:00+02:00",
+        "slots": [],
+        "updated_on": "2025-10-28T12:55:08+00:00",
+        "status": "ScheduleApplies",
+    }
     return plan
 
 

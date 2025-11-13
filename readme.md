@@ -31,3 +31,8 @@
    ```bash
    uv run pytest
    ```
+
+## TODO:
+- [ ] Don't notify with empty slots 
+- [ ] Don't notify about tomorrow until 12:00
+- [ ] Change message for all day without outages 
