@@ -3,6 +3,7 @@ import sys
 from pyaml_env import parse_config
 from src.config import YasnoConfig
 from src.models import NotificationType, NotificationMessage
+from src.notification import NotificationDispatcher
 from src.data_tools import YasnoPlannedOutageParser, OutagesPlanDiffChecker
 from src.factories import NotifierFactory, StorageFactory
 
@@ -22,9 +23,7 @@ if __name__ == "__main__":
 
     notifier = NotifierFactory.create_notifier(conf_dict["notifier"])
     storage = StorageFactory.create_storage(conf_dict["storage"])
-    if storage is None:
-        logger.error("No valid storage configured.")
-        sys.exit(1)
+    notification_dispatcher = NotificationDispatcher(notifier=notifier)
 
     for parsed_plan in (plan_info.today, plan_info.tomorrow):
         parsed_plan.updated_on = plan_info.updated_on
@@ -33,21 +32,13 @@ if __name__ == "__main__":
         if stored_plan:
             if OutagesPlanDiffChecker.has_changes(old_plan=stored_plan, new_plan=parsed_plan):
                 logger.info("Plan has changed %r.", parsed_plan)
-                message = NotificationMessage(
-                    notification_type=NotificationType.PLAN_CHANGED,
-                    plan=parsed_plan,
-                )
                 storage.save_plan(parsed_plan)
+                notification_dispatcher.check_and_notify(plan=parsed_plan, change_type=NotificationType.PLAN_CHANGED)
             else:
                 logger.info("No changes in plan: %r", parsed_plan)
         else:
             logger.info(
                 "No existing plan found for %s, new plan: %r", parsed_plan.date.strftime("%d.%m.%Y"), parsed_plan
             )
-            message = NotificationMessage(
-                notification_type=NotificationType.PLAN_NEW,
-                plan=parsed_plan,
-            )
             storage.save_plan(parsed_plan)
-        if message and notifier:
-            notifier.send_notification(message=message)
+            notification_dispatcher.check_and_notify(plan=parsed_plan, change_type=NotificationType.PLAN_NEW)

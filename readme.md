@@ -31,3 +31,14 @@
    ```bash
    uv run pytest
    ```
+
+## TODO:
+- [x] Don't notify with empty slots 
+- [ ] Don't notify about tomorrow until 12:00
+- [ ] Change message for all day without outages 
+- [x] Add total hours stats 
+
+
+## Notification rules
+1. If plan changed
+2. If new plan has slots
