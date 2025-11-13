@@ -21,6 +21,13 @@ class DayStat(BaseModel):
             raise ValueError("Total minutes in a day is not 1440, got %d", total)
         return v
 
+    def __str__(self) -> str:
+        return (
+            "\nВсього за день:\n"
+            f"❌ Світла немає: {self.outages_minutes // 60} год. {self.outages_minutes % 60} хв.\n"
+            f"⚡️ Світло є: {self.power_minutes // 60} год. {self.power_minutes % 60} хв."
+        )
+
 
 class NotificationType(str, Enum):
     PLAN_NEW = "PlanNew"
@@ -62,11 +69,13 @@ class OutagesPlan(BaseModel):
 
     def __str__(self):
         slots_message: str | None = None
+        hours_stats_message: str | None = None
         match self.status:
             case "EmergencyShutdowns":
                 return "🚨 Екстрені відключення, графіки не діють"
             case "ScheduleApplies":
                 status_message = "Діють графіки запланованих відключень"
+                hours_stats_message = str(self.stats())
             case "WaitingForSchedule":
                 status_message = "Буде застосовуватися графік"
             case "NoOutages":
@@ -78,6 +87,7 @@ class OutagesPlan(BaseModel):
             slots_message = "\n".join([str(slot) for slot in self.slots if str(slot)])
         else:
             slots_message = "⏳ Очікуємо оновлення"
+        slots_message = "\n".join([slots_message, hours_stats_message]) if hours_stats_message else slots_message
         return "\n".join([status_message, slots_message])
 
 

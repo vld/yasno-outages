@@ -5,24 +5,25 @@ from src.data_tools import BaseInfoStorage, FileInfoStorage
 
 class NotifierFactory:
     @staticmethod
-    def create_notifier(config: dict) -> BaseNotifier | None:
+    def create_notifier(config: dict) -> BaseNotifier:
         match config["type"]:
             case "print":
-                return PrintNotifier()
+                notifier = PrintNotifier()
             case "telegram":
                 telegram_config = TelegramConfig(**config)
-                return TelegramNotifier(telegram_config)
+                notifier = TelegramNotifier(telegram_config)
             case _:
-                return None
+                raise ValueError(f"Unknown notifier type: {config['type']}")
+        return notifier
 
 
 class StorageFactory:
     @staticmethod
-    def create_storage(config: dict) -> BaseInfoStorage | None:
+    def create_storage(config: dict) -> BaseInfoStorage:
         match config["type"]:
             case "file_storage":
                 config_file = FileStorageConfig(**config)
                 storage = FileInfoStorage(config=config_file)  # Placeholder for file storage implementation
             case _:
-                storage = None
+                raise ValueError(f"Unknown storage type: {config['type']}")
         return storage
