@@ -9,7 +9,7 @@ def test_empty_slots_messages(raw_plan):
             "\nВсього за день:\n❌ Світла немає: 0 год. 0 хв.\n⚡️ Світло є: 24 год. 0 хв."
         ),
         "Буде застосовуватися графік\n⏳ Очікуємо оновлення",
-        "Без відключень",
+        "💡 Без відключень",
     ]
     for ind, status in enumerate(["EmergencyShutdowns", "ScheduleApplies", "WaitingForSchedule", "NoOutages"]):
         plan_dict = raw_plan | {"status": status}
@@ -26,7 +26,7 @@ def test_slots_messages(raw_plan, slots_data):
             "\nВсього за день:\n❌ Світла немає: 5 год. 30 хв.\n⚡️ Світло є: 18 год. 30 хв."
         ),
         ("Буде застосовуватися графік\nНемає світла ❌ з 10:00 до 13:00\nНемає світла ❌ з 21:30 до 00:00"),
-        "Без відключень",
+        "💡 Без відключень",
     ]
     for ind, status in enumerate(["EmergencyShutdowns", "ScheduleApplies", "WaitingForSchedule", "NoOutages"]):
         plan_dict = raw_plan | {"status": status, "slots": slots}
