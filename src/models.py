@@ -79,7 +79,7 @@ class OutagesPlan(BaseModel):
             case "WaitingForSchedule":
                 status_message = "Буде застосовуватися графік"
             case "NoOutages":
-                return "Без відключень"
+                return "💡 Без відключень"
             case _:
                 logger.warning("Unknown status: %s, full plan: %s", self.status, self)
 

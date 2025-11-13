@@ -24,9 +24,6 @@ if __name__ == "__main__":
     notifier = NotifierFactory.create_notifier(conf_dict["notifier"])
     storage = StorageFactory.create_storage(conf_dict["storage"])
     notification_dispatcher = NotificationDispatcher(notifier=notifier)
-    if storage is None:
-        logger.error("No valid storage configured.")
-        sys.exit(1)
 
     for parsed_plan in (plan_info.today, plan_info.tomorrow):
         parsed_plan.updated_on = plan_info.updated_on
