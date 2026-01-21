@@ -27,6 +27,11 @@
    uv run --env-file .env main.py >> yasno.log 2>&1
    ```
 
+1. **Run the battery monitoring**
+   ```bash
+   uv run --env-file .env battery_monitoring.py >> battery.log 2>&1
+   ```
+
 1. **Run tests**
    ```bash
    uv run pytest

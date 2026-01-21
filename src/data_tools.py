@@ -48,3 +48,18 @@ class OutagesPlanDiffChecker:
     @staticmethod
     def has_changes(old_plan: OutagesPlan, new_plan: OutagesPlan) -> bool:
         return (old_plan.updated_on != new_plan.updated_on) and (old_plan.slots != new_plan.slots)
+
+
+def get_bar(percent, length=15):
+    """
+    Створює ASCII прогрес-бар.
+    percent: інцидент від 0 до 100
+    length: довжина повзунка в символах
+    """
+    percent = max(0, min(100, percent))  # Обмежуємо від 0 до 100
+    filled_length = int(length * percent // 100)
+
+    # Використовуємо блоки: █ (повний) та ░ (пустий)
+    bar = "█" * filled_length + "░" * (length - filled_length)
+
+    return f"{percent}% |{bar}|"

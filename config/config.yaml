@@ -5,7 +5,7 @@ yasno:
   local_tz: "Europe/Kyiv"
   url: "https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/{city_id}/dsos/{dso_id}/planned-outages"
 
-storage:
+outages_storage:
   type: file_storage
   path: !ENV ${FILE_PATH:./outages}
 
@@ -14,3 +14,9 @@ notifier:
   bot_token: !ENV ${TELEGRAM_BOT_TOKEN}
   chat_id: !ENV ${TELEGRAM_CHAT_ID}
   thread_id: !ENV ${TELEGRAM_THREAD_ID}
+
+deye:
+  app_id: !ENV ${DEYE_APP_ID}
+  email: !ENV ${DEYE_EMAIL}
+  password: !ENV ${DEYE_HASHED_PASSWORD}
+  app_secret: !ENV ${DEYE_APP_SECRET}

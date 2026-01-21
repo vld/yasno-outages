@@ -7,6 +7,18 @@ import logging
 
 
 logger = logging.getLogger("YasnoOutageMonitor")
+GridInterconnectionType = Literal[
+    "DISTRIBUTED_FULLY",
+    "EXCESS",
+    "OFF_GRID",
+    "BATTERY_BACKUP",
+    "GROUND_FULLY",
+    "CENTRALIZED_FULLY",
+    "GEN_USE_BTR",
+    "GEN_USE",
+    "GRID_USE_BTR",
+    "USE_BTR",
+]
 
 
 class DayStat(BaseModel):
@@ -97,7 +109,7 @@ class PlanInfo(BaseModel):
     tomorrow: OutagesPlan
 
 
-class NotificationMessage(BaseModel):
+class PlanNotificationMessage(BaseModel):
     notification_type: NotificationType
     plan: OutagesPlan
 
@@ -114,3 +126,27 @@ class NotificationMessage(BaseModel):
                 header = "Невідомий тип повідомлення.\n"
 
         return f"{header}{str(self.plan)}"
+
+
+class StationShortInfo(BaseModel):
+    station_id: int = Field(alias="id")
+    station_name: str = Field(alias="name")
+    battery_soc: float = Field(alias="batterySOC")
+    grid_interconnection_type: GridInterconnectionType = Field(alias="gridInterconnectionType")
+    last_update_time: datetime = Field(alias="lastUpdateTime")
+
+
+class StationLongInfo(StationShortInfo):
+    generation_power: float = Field(alias="generationPower")
+    consumption_power: float = Field(alias="consumptionPower")
+    grid_power: float | None = Field(alias="gridPower")
+    purchase_power: float | None = Field(alias="purchasePower")
+    wire_power: float | None = Field(alias="wirePower")
+    charge_power: float | None = Field(alias="chargePower")
+    discharge_power: float | None = Field(alias="dischargePower")
+    battery_power: float | None = Field(alias="batteryPower")
+    battery_soc: float | None = Field(alias="batterySOC")
+    irradiate_intensity: float | None = Field(alias="irradiateIntensity")
+
+    def is_grid_connected(self) -> bool:
+        return self.wire_power is not None and self.wire_power > 0

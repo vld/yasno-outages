@@ -1,7 +1,7 @@
 import logging
 from pyaml_env import parse_config
 from src.config import YasnoConfig
-from src.models import NotificationType, NotificationMessage
+from src.models import NotificationType, PlanNotificationMessage
 from src.notification import NotificationDispatcher
 from src.data_tools import YasnoPlannedOutageParser, OutagesPlanDiffChecker
 from src.factories import NotifierFactory, StorageFactory
@@ -21,18 +21,18 @@ if __name__ == "__main__":
     plan_info = yasno_parser.parse()
 
     notifier = NotifierFactory.create_notifier(conf_dict["notifier"])
-    storage = StorageFactory.create_storage(conf_dict["storage"])
+    storage = StorageFactory.create_storage(conf_dict["outages_storage"])
     notification_dispatcher = NotificationDispatcher(notifier=notifier)
 
     for parsed_plan in (plan_info.today, plan_info.tomorrow):
         parsed_plan.updated_on = plan_info.updated_on
         stored_plan = storage.read_plan(plan_date=parsed_plan.date)
-        message: NotificationMessage | None = None
+        message: PlanNotificationMessage | None = None
         if stored_plan:
             if OutagesPlanDiffChecker.has_changes(old_plan=stored_plan, new_plan=parsed_plan):
                 logger.info("Plan has changed %r.", parsed_plan)
                 storage.save_plan(parsed_plan)
-                notification_dispatcher.check_and_notify(plan=parsed_plan, change_type=NotificationType.PLAN_CHANGED)
+                notification_dispatcher.plan_notification(plan=parsed_plan, change_type=NotificationType.PLAN_CHANGED)
             else:
                 logger.info("No changes in plan: %r", parsed_plan)
         else:
@@ -40,4 +40,4 @@ if __name__ == "__main__":
                 "No existing plan found for %s, new plan: %r", parsed_plan.date.strftime("%d.%m.%Y"), parsed_plan
             )
             storage.save_plan(parsed_plan)
-            notification_dispatcher.check_and_notify(plan=parsed_plan, change_type=NotificationType.PLAN_NEW)
+            notification_dispatcher.plan_notification(plan=parsed_plan, change_type=NotificationType.PLAN_NEW)

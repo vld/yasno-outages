@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class YasnoConfig(BaseModel):
@@ -24,4 +24,11 @@ class FileStorageConfig(BaseModel):
 class TelegramConfig(BaseModel):
     bot_token: str
     chat_id: str
-    thread_id: str
+    thread_id: str | None = None
+
+
+class DeyeConfig(BaseModel):
+    app_id: str
+    email: str
+    password: str
+    app_secret: str = Field(repr=False)
