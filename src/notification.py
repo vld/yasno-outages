@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.data_tools import BaseInfoStorage, get_bar
+from src.data_tools import get_bar
 from src.models import PlanNotificationMessage, OutagesPlan, NotificationType, StationLongInfo
 from src.config import TelegramConfig
 import requests
@@ -28,6 +28,7 @@ class TelegramNotifier(BaseNotifier):
             url = f"https://api.telegram.org/bot{self.config.bot_token}/sendMessage"
             payload = {
                 "chat_id": self.config.chat_id,
+                "message_thread_id": self.config.thread_id,
                 "text": message,
                 "parse_mode": "HTML",
             }
