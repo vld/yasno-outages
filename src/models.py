@@ -2,9 +2,9 @@ from pydantic import BaseModel, Field, model_validator
 from typing import Literal
 from typing_extensions import Self
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from enum import Enum
 import logging
-
 
 logger = logging.getLogger("YasnoOutageMonitor")
 GridInterconnectionType = Literal[
@@ -19,6 +19,21 @@ GridInterconnectionType = Literal[
     "GRID_USE_BTR",
     "USE_BTR",
 ]
+
+
+def get_bar(percent, length=15):
+    """
+    Створює ASCII прогрес-бар.
+    percent: інцидент від 0 до 100
+    length: довжина повзунка в символах
+    """
+    percent = max(0, min(100, percent))  # Обмежуємо від 0 до 100
+    filled_length = round(length * percent // 100)
+
+    # Використовуємо блоки: █ (повний) та ░ (пустий)
+    bar = "█" * filled_length + "░" * (length - filled_length)
+
+    return bar
 
 
 class DayStat(BaseModel):
@@ -150,3 +165,22 @@ class StationLongInfo(StationShortInfo):
 
     def is_grid_connected(self) -> bool:
         return self.wire_power is not None and self.wire_power > 0
+
+
+class DataPoint(BaseModel):
+    timestamp: datetime
+    soc: float | None = None
+
+
+class MonitoringInfo(BaseModel):
+    message_id: int | None = None
+    date: datetime = datetime.now(tz=ZoneInfo("Europe/Kyiv"))
+    data_points: list[DataPoint]
+
+    def __str__(self) -> str:
+        lines = [f"<b>Моніторинг стану батарей за {self.date.strftime('%d.%m.%Y')}:</b>"]
+        for dp in self.data_points:
+            time_str = dp.timestamp.strftime("%H:%M")
+            lines.append(f"<code>{time_str} |{get_bar(dp.soc)}| {dp.soc}%</code>")
+
+        return "\n".join(lines)

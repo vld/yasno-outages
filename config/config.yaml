@@ -9,6 +9,10 @@ outages_storage:
   type: file_storage
   path: !ENV ${FILE_PATH:./outages}
 
+monitoring_storage:
+  type: file_storage
+  path: !ENV ${MONITORING_FILE_PATH:./monitoring}
+
 notifier:
   type: telegram
   bot_token: !ENV ${TELEGRAM_BOT_TOKEN}
