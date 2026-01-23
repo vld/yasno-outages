@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     for parsed_plan in (plan_info.today, plan_info.tomorrow):
         parsed_plan.updated_on = plan_info.updated_on
-        stored_plan = storage.read_plan(plan_date=parsed_plan.date)
+        stored_plan = storage.read(object_date=parsed_plan.date, name_prefix="plan")
         message: PlanNotificationMessage | None = None
         if stored_plan:
             if OutagesPlanDiffChecker.has_changes(old_plan=stored_plan, new_plan=parsed_plan):
