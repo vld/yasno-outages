@@ -31,6 +31,9 @@ class PrintNotifier(BaseNotifier):
     def send_message(self, message: str) -> None:
         print(message)
 
+    def update_message(self, message_id: int, message: str) -> None:
+        print(f"Updated message {message_id}: {message}")
+
 
 class TelegramNotifier(BaseNotifier):
     def __init__(self, config: TelegramConfig):

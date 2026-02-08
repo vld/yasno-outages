@@ -8,12 +8,31 @@ import orjson
 class YasnoPlannedOutageParser:
     def __init__(self, config: YasnoConfig):
         self.config = config
+        self.group_id = None
         self.url = config.url.format(city_id=config.city_id, dso_id=config.dso_id)
+
+    def get_group_id(self) -> str:
+        if self.group_id:
+            return self.group_id
+        response = requests.get(
+            "https://app.yasno.ua/api/blackout-service/public/shutdowns/addresses/v2/group",
+            params={
+                "regionId": self.config.city_id,
+                "streetId": self.config.street_id,
+                "houseId": self.config.house_id,
+                "dsoId": self.config.dso_id,
+            },
+            timeout=600,
+        )
+        response.raise_for_status()
+        data = response.json()
+        self.group_id = ".".join([str(data.get("group")), str(data.get("subgroup"))])
+        return self.group_id
 
     def parse(self) -> PlanInfo:
         response = requests.get(self.url)
         response.raise_for_status()
-        data = response.json().get(self.config.group_id, {})
+        data = response.json().get(self.get_group_id(), {})
         return PlanInfo(**data)
 
 

@@ -4,7 +4,8 @@ from pydantic import BaseModel, Field
 class YasnoConfig(BaseModel):
     city_id: int
     dso_id: int
-    group_id: str
+    street_id: int
+    house_id: int
     local_tz: str
     url: str
 
