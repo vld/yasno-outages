@@ -1,4 +1,5 @@
 from src.config import YasnoConfig, FileStorageConfig
+from src.consts import *
 from src.models import PlanInfo, OutagesPlan, MonitoringInfo
 from datetime import date
 import requests
@@ -9,20 +10,51 @@ class YasnoPlannedOutageParser:
     def __init__(self, config: YasnoConfig):
         self.config = config
         self.group_id = None
-        self.url = config.url.format(city_id=config.city_id, dso_id=config.dso_id)
+        self.session = requests.Session()
+
+    def _get_street_id(self) -> int:
+        response = self.session.get(
+            YASNO_STREETS_URL,
+            params={"regionId": self.config.city_id, "query": self.config.street_name, "dsoId": self.config.dso_id},
+            timeout=YASNO_API_TIMEOUT,
+        )
+        response.raise_for_status()
+        data = response.json()
+        if not data:
+            raise ValueError(f"Street '{self.config.street_name}' not found")
+        return data[0].get("id")
+
+    def _get_house_id(self, street_id: int) -> int:
+        response = self.session.get(
+            YASNO_HOUSES_URL,
+            params={
+                "regionId": self.config.city_id,
+                "streetId": street_id,
+                "query": self.config.house_number,
+                "dsoId": self.config.dso_id,
+            },
+            timeout=YASNO_API_TIMEOUT,
+        )
+        response.raise_for_status()
+        data = response.json()
+        if not data:
+            raise ValueError(f"House '{self.config.house_number}' not found on street id {street_id}")
+        return data[0].get("id")
 
     def get_group_id(self) -> str:
         if self.group_id:
             return self.group_id
-        response = requests.get(
-            "https://app.yasno.ua/api/blackout-service/public/shutdowns/addresses/v2/group",
+        street_id = self._get_street_id()
+        house_id = self._get_house_id(street_id)
+        response = self.session.get(
+            YASNO_GROUP_URL,
             params={
                 "regionId": self.config.city_id,
-                "streetId": self.config.street_id,
-                "houseId": self.config.house_id,
+                "streetId": street_id,
+                "houseId": house_id,
                 "dsoId": self.config.dso_id,
             },
-            timeout=600,
+            timeout=YASNO_API_TIMEOUT,
         )
         response.raise_for_status()
         data = response.json()
@@ -30,7 +62,9 @@ class YasnoPlannedOutageParser:
         return self.group_id
 
     def parse(self) -> PlanInfo:
-        response = requests.get(self.url)
+        response = self.session.get(
+            YASNO_PLAN_URL.format(city_id=self.config.city_id, dso_id=self.config.dso_id), timeout=YASNO_API_TIMEOUT
+        )
         response.raise_for_status()
         data = response.json().get(self.get_group_id(), {})
         return PlanInfo(**data)

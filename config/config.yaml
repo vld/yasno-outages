@@ -1,10 +1,9 @@
 yasno:
-  city_id: 25
-  dso_id: 902
-  street_id: 2119
-  house_id: 20955
+  city_id: !ENV ${REGION_ID:25}
+  dso_id: !ENV ${DSO_ID:902}
+  street_name: !ENV ${STREET_NAME}
+  house_number: !ENV ${HOUSE_NUMBER}
   local_tz: "Europe/Kyiv"
-  url: "https://app.yasno.ua/api/blackout-service/public/shutdowns/regions/{city_id}/dsos/{dso_id}/planned-outages"
 
 outages_storage:
   type: file_storage

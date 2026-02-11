@@ -4,10 +4,9 @@ from pydantic import BaseModel, Field
 class YasnoConfig(BaseModel):
     city_id: int
     dso_id: int
-    street_id: int
-    house_id: int
+    street_name: str
+    house_number: str
     local_tz: str
-    url: str
 
 
 class MySQLConfig(BaseModel):
