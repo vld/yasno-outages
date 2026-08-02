@@ -181,6 +181,6 @@ class MonitoringInfo(BaseModel):
         lines = [f"<b>Моніторинг стану батарей за {self.date.strftime('%d.%m.%Y')}:</b>"]
         for dp in self.data_points:
             time_str = dp.timestamp.strftime("%H:%M")
-            lines.append(f"<code>{time_str} |{get_bar(dp.soc)}| {dp.soc}%</code>")
+            lines.append(f"<code>{time_str} |{get_bar(dp.soc)}| {dp.soc:.1f}%</code>")
 
         return "\n".join(lines)

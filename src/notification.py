@@ -28,8 +28,11 @@ class BaseNotifier(ABC):
 
 
 class PrintNotifier(BaseNotifier):
-    def send_message(self, message: str) -> None:
+    FAKE_MESSAGE_ID: int = 33
+
+    def send_message(self, message: str) -> dict:
         print(message)
+        return {"result": {"message_id": self.FAKE_MESSAGE_ID}}
 
     def update_message(self, message_id: int, message: str) -> None:
         print(f"Updated message {message_id}: {message}")
